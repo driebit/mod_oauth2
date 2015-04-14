@@ -24,6 +24,7 @@ issue_code(ClientId, UserId, _Context) ->
 %% @doc Issue an access token (RFC 6749 4.1.4) for authorization_code grants
 -spec authorize_code_grant(string(), string(), string(), #context{}) -> string().
 authorize_code_grant(ClientId, ClientSecret, Code, Context) ->
+    ?DEBUG({ClientId, ClientSecret, Code}),
     case ets:lookup(?CODE_TABLE, Code) of 
         [] ->
             {error, "unknown_code"};
@@ -41,7 +42,7 @@ authorize_code_grant(ClientId, ClientSecret, Code, Context) ->
                             m_access_token:create(ClientId, UserId, Context);                    
                         TrueSecret ->
                             lager:warning("Secrets don't match: ~p and ~p", [BinarySecret, TrueSecret]),
-                            {error, "invalid_client"}
+                            {error, invalid_client}
                     end
             end;
         [{_Code, _}] ->

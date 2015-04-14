@@ -19,13 +19,14 @@ create(ClientId, UserId, Context) ->
         [
             {client_id, z_convert:to_integer(ClientId)},
             {user_id, z_convert:to_integer(UserId)},
-            {token, Token},
+            {access_token, Token},
             {expires_at, z_datetime:to_datetime(z_datetime:timestamp() + ?TOKEN_TTL)}
         ],
         Context
     ) of
         {ok, Id} ->
-            z_db:select(?TOKEN_TABLE, Id, Context);
+            {ok, Row} = z_db:select(?TOKEN_TABLE, Id, Context),
+            Row;
         R ->
             ?DEBUG(R)
     end.
@@ -39,13 +40,13 @@ install(Context) ->
                         id serial not null,
                         client_id integer not null,
                         user_id integer,
-                        token varchar(255) not null,
+                        access_token varchar(255) not null,
                         expires_at timestamp with time zone not null default now(),
                         primary key (id)
                     )
                 ", Context),
             [] = z_db:q("
-                    create index token on oauth2_access_token (token)
+                    create index access_token on oauth2_access_token (access_token)
                 ", Context),
             ok;
         true ->
