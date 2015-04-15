@@ -1,7 +1,7 @@
 -module(service_oauth2_me).
 -author("Driebit <tech@driebit.nl>").
 
--svc_title("Retrieve an access token").
+-svc_title("Get user information").
 
 -svc_needauth(true).
 
@@ -9,7 +9,6 @@
 
 -include_lib("zotonic.hrl").
 
-%% @doc Get user information
 process_get(_ReqData, Context) ->
     %% Get user from context
     UserId = Context#context.user_id,
