@@ -5,6 +5,7 @@
 -mod_description("Provides authentication over OAuth2.").
 -mod_prio(400). %% Must be before mod_oauth
 -mod_schema(1).
+-mod_depends([mod_oauth]).
 
 -export([
     init/1,
@@ -85,4 +86,3 @@ get_authenticated_context(AccessToken, Context) ->
                     z_acl:logon(UserId, Context)        
             end
     end.
-
