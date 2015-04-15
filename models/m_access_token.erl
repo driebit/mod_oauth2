@@ -33,7 +33,7 @@ create(ClientId, UserId, Context) ->
     end.
 
 %% @doc Retrieve previously created access token
--spec get(string(), #context{}) -> string() | undefined.
+-spec get(string(), #context{}) -> list() | undefined.
 get(Token, Context) ->
     z_db:assoc_props_row(
         "select * from oauth2_access_token where access_token=$1",

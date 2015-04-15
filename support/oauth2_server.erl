@@ -4,7 +4,9 @@
     init/0,
     issue_code/3,
     authorize_code_grant/4,
-    get_client/2
+    get_client/2,
+    get_client_by_title/2,
+    create_client/5
 ]).
 
 -include("zotonic.hrl").
@@ -51,6 +53,12 @@ authorize_code_grant(ClientId, ClientSecret, Code, Context) ->
 
 get_client(Id, Context) ->
     m_oauth_app:get_consumer(z_convert:to_integer(Id), Context).
-    
+
+get_client_by_title(Title, Context) ->
+    z_db:assoc_props_row("select * from oauth_application_registry where application_title=$1", [Title], Context).
+
+create_client(Title, URL, Desc, Callback, Context) ->
+    m_oauth_app:create_consumer(Title, URL, Desc, Callback, Context).
+
 generate_code() ->
     base64:encode_to_string(crypto:hash(sha512, crypto:rand_bytes(100))).
