@@ -1,4 +1,5 @@
 [
-    {oath_dialog, ["oauth2", "dialog"], controller_logon, [{template, "logon_oauth.tpl"}]},
-    {oauth_access_token, ["oauth2", "token"], controller_api, [{module, "oauth2"}, {method, "access_token"}]}
+    {oath_dialog, ["oauth2", "dialog"], controller_logon, []},
+    {oauth_access_token, ["oauth2", "token"], controller_api, [{module, "oauth2"}, {method, "access_token"}]},
+    {oauth_access_token, ["oauth2", "me"], controller_api, [{module, "oauth2"}, {method, "me"}]}
 ].

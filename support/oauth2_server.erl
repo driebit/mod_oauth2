@@ -24,7 +24,6 @@ issue_code(ClientId, UserId, _Context) ->
 %% @doc Issue an access token (RFC 6749 4.1.4) for authorization_code grants
 -spec authorize_code_grant(string(), string(), string(), #context{}) -> string().
 authorize_code_grant(ClientId, ClientSecret, Code, Context) ->
-    ?DEBUG({ClientId, ClientSecret, Code}),
     case ets:lookup(?CODE_TABLE, Code) of 
         [] ->
             {error, "unknown_code"};

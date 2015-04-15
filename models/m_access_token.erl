@@ -3,7 +3,8 @@
 
 -export([
     install/1,
-    create/3
+    create/3,
+    get/2
 ]).
 
 -define(TOKEN_TABLE, oauth2_access_token).
@@ -30,6 +31,15 @@ create(ClientId, UserId, Context) ->
         R ->
             ?DEBUG(R)
     end.
+
+%% @doc Retrieve previously created access token
+-spec get(string(), #context{}) -> string() | undefined.
+get(Token, Context) ->
+    z_db:assoc_props_row(
+        "select * from oauth2_access_token where access_token=$1",
+        [Token],
+        Context
+    ).
 
 %% @doc Create database tables
 install(Context) ->
