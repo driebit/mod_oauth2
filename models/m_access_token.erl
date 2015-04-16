@@ -26,8 +26,11 @@ create(ClientId, UserId, Context) ->
         Context
     ) of
         {ok, Id} ->
-            {ok, Row} = z_db:select(?TOKEN_TABLE, Id, Context),
-            Row;
+            z_db:assoc_props_row(
+                "select client_id, access_token, user_id, expires_at from oauth2_access_token where id=$1",
+                [Id],
+                Context
+            );
         R ->
             ?DEBUG(R)
     end.
@@ -36,7 +39,7 @@ create(ClientId, UserId, Context) ->
 -spec get(string(), #context{}) -> list() | undefined.
 get(Token, Context) ->
     z_db:assoc_props_row(
-        "select * from oauth2_access_token where access_token=$1",
+        "select client_id, access_token, user_id, expires_at from oauth2_access_token where access_token=$1",
         [Token],
         Context
     ).

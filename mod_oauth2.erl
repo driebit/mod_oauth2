@@ -78,10 +78,9 @@ get_authenticated_context(AccessToken, Context) ->
         CheckedToken ->
             case proplists:get_value(user_id, CheckedToken) of
                 undefined ->
-                    %% Client (not user) access token, so return user from 
-                    %% app/client config
-                    Client = oauth2_server:get_client(proplists:get_value(client_id, CheckedToken)),
-                    ?DEBUG(Client);
+                    %% Client (not user) access token, so authenticate as user
+                    %% that owns the client app
+                    z_acl:logon(proplists:get_value(client_id, CheckedToken), Context);
                 UserId ->
                     z_acl:logon(UserId, Context)        
             end
