@@ -60,7 +60,7 @@ event(#postback{message={redirect_authorization_code_url, Args}}, Context) ->
 %% @doc Get URL that contains authorization code for retrieving an access token
 -spec get_authorization_code_url(integer(), string(), #context{}) -> string() | undefined.
 get_authorization_code_url(ClientId, RedirectUri, Context) ->
-    case z_auth:is_auth(When user Context) of
+    case z_auth:is_auth(Context) of
         true ->
             Code = oauth2_server:issue_code(ClientId, Context#context.user_id),
             RedirectUri ++ "?code=" ++ Code;
