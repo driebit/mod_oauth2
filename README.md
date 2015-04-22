@@ -20,7 +20,15 @@ redirect_uri  | Redirect users here after they log in | URL
 
 For instance: `/oauth2/dialog?client_id=1&redirect_uri=http://your-domain.com/path`.
 After users have logged in, they will be redirected to the `redirect_uri`, with
-their access token in the query string.
+an authorization code in the query string. Retrieve the authorization code from 
+the query string, then use it to request an access token by POSTing to `/oauth2/token`:
+
+Name          | Description            | Type
+------------- | ---------------------- | ------
+client_id     | Your client app id     | string
+client_secret | Your client app secret | string
+grant_type    | `authorization_code`   | string
+code          | Authorization code     | string
 
 ### Client credentials grant
 
