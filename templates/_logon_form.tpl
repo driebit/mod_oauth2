@@ -1,4 +1,4 @@
-{# If user is already logged in, immediately provide a token #}
+{# If user is already logged in, immediately redirect to authorization code URL #}
 {% if m.acl.user %}
 {% wire type="load" 
     postback={redirect_authorization_code_url client_id=q.client_id redirect_uri=q.redirect_uri} 
