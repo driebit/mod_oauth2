@@ -2,7 +2,7 @@
 
 -export([
     init/0,
-    issue_code/3,
+    issue_code/2,
     authorize_code_grant/4,
     client_credentials_grant/3,
     get_client/2,
@@ -18,7 +18,8 @@ init() ->
     ets:new(?CODE_TABLE, [named_table, public]).
 
 %% @doc Issue an authorization code (RFC 6749 4.1.2)
-issue_code(ClientId, UserId, _Context) ->
+-spec issue_code(string(), integer()) -> string().
+issue_code(ClientId, UserId) ->
     %% Generate a code
     Code = generate_code(),
     ets:insert(?CODE_TABLE, {Code, [{client_id, ClientId}, {user_id, UserId}]}),
@@ -44,7 +45,7 @@ authorize_code_grant(ClientId, ClientSecret, Code, Context) ->
 
 client_credentials_grant(ClientId, ClientSecret, Context) ->
     case validate_client(ClientId, ClientSecret, Context) of
-        {ok, Client} ->
+        {ok, _Client} ->
             m_access_token:create(ClientId, undefined, Context);
         Error -> 
             Error
