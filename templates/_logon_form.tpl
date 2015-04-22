@@ -1,3 +1,10 @@
+{# If user is already logged in, immediately provide a token #}
+{% if m.acl.user %}
+{% wire type="load" 
+    postback={redirect_authorization_code_url client_id=q.client_id redirect_uri=q.redirect_uri} 
+    delegate="mod_oauth2" 
+%}
+{% endif %}
 <iframe src="/lib/images/spinner.gif" id="logonTarget" name="logonTarget" style="display:none"></iframe>
 <form id="logon_form" method="post" action="postback" class="z_logon_form" target="logonTarget">
     {% if not hide_title %}
