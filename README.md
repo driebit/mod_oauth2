@@ -47,6 +47,12 @@ After retrieving an access token, authenticate your requests with that token
 by setting the Authorization header:
 
 ```http
-GET /some/url
-Authorization: Bearer your-token
+GET /some/url HTTP/1.1
+Authorization: Bearer your-oauth-token
 ```
+
+### Retrieve user data
+
+```http 
+GET /oauth2/me HTTP/1.1
+Authorization: Bearer your-oauth-token
