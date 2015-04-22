@@ -1,5 +1,5 @@
 [
-    {oath_dialog, ["oauth2", "dialog"], controller_logon, []},
+    {oauth_dialog, ["oauth2", "dialog"], controller_logon, []},
     {oauth_access_token, ["oauth2", "token"], controller_api, [{module, "oauth2"}, {method, "access_token"}]},
     {oauth_access_token, ["oauth2", "me"], controller_api, [{module, "oauth2"}, {method, "me"}]}
 ].
