@@ -12,7 +12,8 @@
     observe_logon_ready_page/2,
     observe_service_authorize/2,
     manage_schema/2,
-    event/2
+    event/2,
+    get_access_token/2
 ]).
 
 -include_lib("zotonic.hrl").
@@ -35,7 +36,7 @@ observe_logon_ready_page(#logon_ready_page{}, Context) ->
 
 observe_service_authorize(#service_authorize{service_module=_Module}, Context) ->
     ReqData = z_context:get_reqdata(Context),
-    case get_access_token(ReqData) of
+    case get_access_token_from_header(ReqData) of
         undefined ->
             %% No OAuth2 request, but it may be OAuth1 or otherwise, so ignore
             undefined;
@@ -71,15 +72,30 @@ get_authorization_code_url(ClientId, RedirectUri, Context) ->
 manage_schema(install, Context) ->
     m_access_token:install(Context).
 
-%% @doc Get access token from Authorization header
-get_access_token(ReqData) ->
+%% @doc Read OAuth2 access token from Authorization header
+get_access_token_from_header(ReqData) ->
     Header = wrq:get_req_header_lc("authorization", ReqData),
-    case string:tokens(Header, " ") of
-        ["Bearer", AccessToken] ->
-            AccessToken;
-        _ ->
-            %% No OAuth2 authorization header, so ignore
-            undefined
+    case Header of 
+        undefined ->
+            %% Request contains no Authorization header
+            undefined;
+        Header ->
+            case string:tokens(Header, " ") of
+                ["Bearer", AccessToken] ->
+                    AccessToken;
+                _ ->
+                    undefined
+            end
+    end.
+
+%% @doc Get access token from Authorization header
+-spec get_access_token(string(), #context{}) -> list().
+get_access_token(ReqData, Context) ->
+    case get_access_token_from_header(ReqData) of
+        undefined ->
+            undefined;
+        AccessToken ->
+            m_access_token:get(AccessToken, Context)
     end.
 
 get_authenticated_context(AccessToken, Context) ->
