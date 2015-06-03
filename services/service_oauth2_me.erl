@@ -16,7 +16,7 @@ process_get(ReqData, Context) ->
     case mod_oauth2:get_access_token(ReqData, Context) of
         undefined ->
             %% Change to 401 when https://github.com/zotonic/zotonic/pull/962 is merged
-            {error, 403, undefined};
+            {error, access_denied, undefined};
         AccessToken -> 
             case proplists:get_value(user_id, AccessToken) of
                 undefined -> 
