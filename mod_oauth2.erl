@@ -27,6 +27,8 @@ observe_logon_ready_page(#logon_ready_page{}, Context) ->
     case z_context:get_q("redirect_uri", Context) of
         [] -> 
             undefined;
+        undefined ->
+            undefined;
         RedirectUri -> 
             case z_context:get_q("client_id", Context) of
                 [] -> undefined;
