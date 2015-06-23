@@ -32,12 +32,12 @@ authorize_code_grant(ClientId, ClientSecret, Code, Context) ->
         {ok, _Client} ->
             case ets:lookup(?CODE_TABLE, Code) of 
                 [] ->
-                    {error, "unknown_code"};
+                    {error, unknown_arg, "invalid code for this client"};
                 [{_Code, [{client_id, ClientId}, {user_id, UserId}]}] ->
                     m_access_token:create(ClientId, UserId, Context);
                 [{_Code, _}] ->
                     %% When code does not belong to this client
-                    lager:warning("Invalid code: ~p for client: ~p", [Code, ClientId])
+                    {error, unknown_arg, "invalid code for this client"}
             end;
         Error ->
             Error

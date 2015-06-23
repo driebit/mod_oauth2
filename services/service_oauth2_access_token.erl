@@ -33,6 +33,8 @@ process_grant(undefined, _, _, _Context) ->
 process_grant(UnknownGrant, _, _, _Context) ->
     {error, invalid_arg, UnknownGrant}.
 
+handle_grant_result({error, Reason, Param}) ->
+    {error, Reason, Param};
 handle_grant_result({error, Reason}) ->
     {error, Reason, <<>>};
 handle_grant_result(Token) ->
