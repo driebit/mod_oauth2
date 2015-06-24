@@ -30,10 +30,12 @@ issue_code(ClientId, UserId) ->
 authorize_code_grant(ClientId, ClientSecret, Code, Context) ->
     case validate_client(ClientId, ClientSecret, Context) of
         {ok, _Client} ->
-            case ets:lookup(?CODE_TABLE, Code) of 
+            %% ClientId comes in as a 'string'
+            ClientIdInt = z_convert:to_integer(ClientId),
+            case ets:lookup(?CODE_TABLE, Code) of
                 [] ->
                     {error, unknown_arg, "invalid code for this client"};
-                [{_Code, [{client_id, ClientId}, {user_id, UserId}]}] ->
+                [{_Code, [{client_id, ClientIdInt}, {user_id, UserId}]}] ->
                     m_access_token:create(ClientId, UserId, Context);
                 [{_Code, _}] ->
                     %% When code does not belong to this client
