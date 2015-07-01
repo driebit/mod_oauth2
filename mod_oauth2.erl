@@ -103,7 +103,7 @@ get_access_token(ReqData, Context) ->
 get_authenticated_context(AccessToken, Context) ->
     case m_access_token:get(AccessToken, Context) of
         undefined ->
-            {error, not_valid};
+            undefined;
         CheckedToken ->
             case proplists:get_value(user_id, CheckedToken) of
                 undefined ->
