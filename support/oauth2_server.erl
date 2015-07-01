@@ -22,7 +22,7 @@ init() ->
 issue_code(ClientId, UserId) ->
     %% Generate a code
     Code = generate_code(),
-    ets:insert(?CODE_TABLE, {Code, [{client_id, ClientId}, {user_id, UserId}]}),
+    ets:insert(?CODE_TABLE, {Code, [{client_id, z_convert:to_integer(ClientId)}, {user_id, UserId}]}),
     Code.
 
 %% @doc Issue an access token (RFC 6749 4.1.4) for authorization_code grants
