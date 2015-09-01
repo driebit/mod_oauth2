@@ -15,7 +15,7 @@
 -define(CODE_TABLE, oauth2_code).
 
 init() ->
-    ets:new(?CODE_TABLE, [named_table, public]).
+    ensure_code_table().
 
 %% @doc Issue an authorization code (RFC 6749 4.1.2)
 -spec issue_code(string(), integer()) -> string().
@@ -49,13 +49,13 @@ client_credentials_grant(ClientId, ClientSecret, Context) ->
     case validate_client(ClientId, ClientSecret, Context) of
         {ok, _Client} ->
             m_access_token:create(ClientId, undefined, Context);
-        Error -> 
+        Error ->
             Error
     end.
 
 validate_client(ClientId, ClientSecret, Context) ->
     case get_client(ClientId, Context) of
-        [] -> 
+        [] ->
             lager:warning("Unknown client: ~p", [ClientId]),
             {error, invalid_client};
         Client ->
@@ -81,3 +81,11 @@ create_client(Title, URL, Desc, Callback, Context) ->
 
 generate_code() ->
     base64:encode_to_string(crypto:hash(sha512, crypto:rand_bytes(100))).
+
+ensure_code_table() ->
+    case ets:info(?CODE_TABLE) of
+        undefined ->
+            ets:new(?CODE_TABLE, [named_table, public]);
+        _ ->
+            ok
+    end.
