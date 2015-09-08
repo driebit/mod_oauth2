@@ -25,11 +25,11 @@ init(_Args) ->
 -spec observe_logon_ready_page(#logon_ready_page{}, #context{}) -> string().
 observe_logon_ready_page(#logon_ready_page{}, Context) ->
     case z_context:get_q("redirect_uri", Context) of
-        [] -> 
+        [] ->
             undefined;
         undefined ->
             undefined;
-        RedirectUri -> 
+        RedirectUri ->
             case z_context:get_q("client_id", Context) of
                 [] -> undefined;
                 ClientId -> get_authorization_code_url(ClientId, RedirectUri, Context)
@@ -45,7 +45,7 @@ observe_service_authorize(#service_authorize{service_module=_Module}, Context) -
         AccessToken ->
             %% Validate access token
             case get_authenticated_context(AccessToken, Context) of
-                undefined -> 
+                undefined ->
                     {{halt, 403}, ReqData, Context};
                 AuthenticatedContext ->
                     {true, ReqData, AuthenticatedContext}
@@ -67,7 +67,7 @@ get_authorization_code_url(ClientId, RedirectUri, Context) ->
         true ->
             Code = oauth2_server:issue_code(ClientId, Context#context.user_id),
             RedirectUri ++ "?code=" ++ Code;
-        false -> 
+        false ->
             undefined
     end.
 
@@ -77,7 +77,7 @@ manage_schema(install, Context) ->
 %% @doc Read OAuth2 access token from Authorization header
 get_access_token_from_header(ReqData) ->
     Header = wrq:get_req_header_lc("authorization", ReqData),
-    case Header of 
+    case Header of
         undefined ->
             %% Request contains no Authorization header
             undefined;
@@ -106,11 +106,11 @@ get_authenticated_context(AccessToken, Context) ->
             undefined;
         CheckedToken ->
             case proplists:get_value(user_id, CheckedToken) of
-                undefined ->
+                    undefined ->
                     %% Client (not user) access token, so authenticate as user
                     %% that owns the client app
                     z_acl:logon(proplists:get_value(client_id, CheckedToken), Context);
                 UserId ->
-                    z_acl:logon(UserId, Context)        
+                    z_acl:logon(UserId, Context)
             end
     end.

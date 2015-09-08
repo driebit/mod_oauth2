@@ -29,9 +29,9 @@ issue_code(ClientId, UserId) ->
 -spec authorize_code_grant(string(), string(), string(), #context{}) -> string().
 authorize_code_grant(ClientId, ClientSecret, Code, Context) ->
     case validate_client(ClientId, ClientSecret, Context) of
-        {ok, _Client} ->
+        {ok, Client} ->
             %% ClientId comes in as a 'string'
-            ClientIdInt = z_convert:to_integer(ClientId),
+            ClientIdInt = z_convert:to_integer(proplists:get_value(id, Client)),
             case ets:lookup(?CODE_TABLE, Code) of
                 [] ->
                     {error, unknown_arg, "invalid code for this client"};
@@ -47,8 +47,8 @@ authorize_code_grant(ClientId, ClientSecret, Code, Context) ->
 
 client_credentials_grant(ClientId, ClientSecret, Context) ->
     case validate_client(ClientId, ClientSecret, Context) of
-        {ok, _Client} ->
-            m_access_token:create(ClientId, undefined, Context);
+        {ok, Client} ->
+            m_access_token:create(proplists:get_value(id, Client), undefined, Context);
         Error ->
             Error
     end.
@@ -71,7 +71,12 @@ validate_client(ClientId, ClientSecret, Context) ->
     end.
 
 get_client(Id, Context) ->
-    m_oauth_app:get_consumer(z_convert:to_integer(Id), Context).
+    case m_oauth_app:consumer_lookup(Id, Context) of
+        undefined ->
+            m_oauth_app:get_consumer(z_convert:to_integer(Id), Context);
+        Consumer ->
+            Consumer
+    end.
 
 get_client_by_title(Title, Context) ->
     z_db:assoc_props_row("select * from oauth_application_registry where application_title=$1", [Title], Context).
