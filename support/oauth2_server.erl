@@ -58,6 +58,9 @@ validate_client(ClientId, ClientSecret, Context) ->
         [] ->
             lager:warning("Unknown client: ~p", [ClientId]),
             {error, invalid_client};
+        undefined ->
+            lager:warning("Unknown client: ~p", [ClientId]),
+            {error, invalid_client};
         Client ->
             %% Client exists
             BinarySecret = z_convert:to_binary(ClientSecret),
@@ -70,13 +73,10 @@ validate_client(ClientId, ClientSecret, Context) ->
             end
     end.
 
-get_client(Id, Context) ->
-    case m_oauth_app:consumer_lookup(Id, Context) of
-        undefined ->
-            m_oauth_app:get_consumer(z_convert:to_integer(Id), Context);
-        Consumer ->
-            Consumer
-    end.
+get_client(Id, Context) when is_integer(Id) ->
+    m_oauth_app:get_consumer(z_convert:to_integer(Id), Context);
+get_client(Key, Context) ->
+    m_oauth_app:consumer_lookup(Key, Context).
 
 get_client_by_title(Title, Context) ->
     z_db:assoc_props_row("select * from oauth_application_registry where application_title=$1", [Title], Context).
