@@ -11,15 +11,20 @@
 
 process_post(_ReqData, Context) ->
     GrantType = z_context:get_q("grant_type", Context),
-    
+
     %% Validate required args client_id and client_secret
     case z_context:get_q("client_id", Context) of
         undefined -> {error, missing_arg, "client_id"};
-        ClientId -> 
+        ClientId ->
             case z_context:get_q("client_secret", Context) of
                 undefined -> {error, missing_arg, "client_secret"};
-                ClientSecret -> 
-                    process_grant(GrantType, ClientId, ClientSecret, Context)                
+                ClientSecret ->
+                    process_grant(
+                        z_convert:to_list(GrantType),
+                        ClientId,
+                        ClientSecret,
+                        Context
+                    )
             end
     end.
 
@@ -39,4 +44,3 @@ handle_grant_result({error, Reason}) ->
     {error, Reason, <<>>};
 handle_grant_result(Token) ->
     z_convert:to_json(Token).
-    
