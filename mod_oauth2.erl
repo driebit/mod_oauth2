@@ -106,11 +106,14 @@ get_authenticated_context(AccessToken, Context) ->
             undefined;
         CheckedToken ->
             case proplists:get_value(user_id, CheckedToken) of
-                    undefined ->
+                undefined ->
                     %% Client (not user) access token, so authenticate as user
                     %% that owns the client app
-                    z_acl:logon(proplists:get_value(client_id, CheckedToken), Context);
+                    ClientId = proplists:get_value(client_id, CheckedToken),
+                    Client = m_oauth_app:get_consumer(ClientId, Context),
+                    z_acl:logon(proplists:get_value(user_id, Client), Context);
                 UserId ->
+                    ?DEBUG(UserId),
                     z_acl:logon(UserId, Context)
             end
     end.
